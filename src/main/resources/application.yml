@@ -1,0 +1,26 @@
+topic:
+  tracab:
+    name: tracab_01_raw
+    replication-factor: 2
+    partitions: 3
+
+writer:
+  tracab:
+    gen5:
+      time-start: 2019-01-01T00:00:00.000Z
+
+spring:
+  kafka:
+    bootstrap-servers:
+      - ${DATAPLATFORM_IP}:9092
+      - ${DATAPLATFORM_IP}:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      retries: 1
+      buffer-memory: 33554432
+      properties:
+        auto.register.schemas: true
+        use.latest.version: true
+    properties:
+      schema.registry.url: "http://${DATAPLATFORM_IP}:8081"
