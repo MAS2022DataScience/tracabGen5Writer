@@ -1,6 +1,6 @@
 package com.mas2022datascience.tracabgen5writer.producer;
 
-import com.mas2022datascience.avro.v1.Frame;
+import com.mas2022datascience.avro.v1.TracabGen5TF01;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -13,28 +13,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class KafkaTracabProducer {
   @Autowired
-  private KafkaTemplate<String, Frame> kafkaTemplate;
+  private KafkaTemplate<String, TracabGen5TF01> kafkaTemplate;
 
   @Value(value = "${topic.tracab.name}")
   private String tracabTopic;
 
-  public void produce(String key, Frame value) {
+  public void produce(String key, TracabGen5TF01 value) {
 
-    long time = System.currentTimeMillis();
-
-    SendResult<String, Frame> result = null;
+    SendResult<String, TracabGen5TF01> result = null;
     try {
       result = kafkaTemplate.send(tracabTopic, key, value).get(10, TimeUnit.SECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+    } catch (InterruptedException | ExecutionException | TimeoutException e ) {
       e.printStackTrace();
     }
 
-//    long elapsedTime = System.currentTimeMillis() - time;
     System.out.printf("sent record(key=%s, offset=%d)\n",key,result.getRecordMetadata().offset());
-//    System.out.printf("sent record(key=%s value=%s) "
-//            + "meta(partition=%d, offset=%d) time=%d\n",
-//        key, value, result.getRecordMetadata().partition(),
-//        result.getRecordMetadata().offset(), elapsedTime);
+
   }
 
 }

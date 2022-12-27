@@ -20,16 +20,22 @@ topic:
     replication-factor: 2
     partitions: 3
 
+file:
+  raw:
+    filepath: "./tracabGen5/133039.dat"
+  metadata:
+    filepath: "./tracabGen5/133039_metadata.json"
+
 writer:
   tracab:
     gen5:
-      time-start: 2019-01-01T00:00:00.000Z
+      time-start: 2022-12-02T20:00:00.000Z
 
 spring:
   kafka:
     bootstrap-servers:
-      - ${DATAPLATFORM_IP}:9092
-      - ${DATAPLATFORM_IP}:9093
+      - "${DATAPLATFORM_IP}:9092"
+      - "${DATAPLATFORM_IP}:9093"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
