@@ -29,14 +29,32 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 	private final KafkaTracabProducer kafkaTracabProducer;
 
+	// Initial time of the match
 	@Value(value = "${writer.tracab.gen5.time-start}")
 	private String initialTime;
 
+	// Filepaths
 	@Value(value = "${file.raw.filepath}")
 	private String rawFilePath;
 
 	@Value(value = "${file.metadata.filepath}")
 	private String metadataFilePath;
+
+	// Topics
+	@Value(value = "${topic.tracab.name}")
+	private String tracabGen5RawTopic;
+
+	@Value(value = "${topic.general-match.name}")
+	private String tracabGeneralMatchTopic;
+
+	@Value(value = "${topic.general-match-phase.name}")
+	private String tracabGeneralMatchPhaseTopic;
+
+	@Value(value = "${topic.general-match-team.name}")
+	private String tracabGeneralMatchTeamTopic;
+
+	@Value(value = "${topic.general-match-player.name}")
+	private String tracabGeneralMatchPlayerTopic;
 
 	public TracabGen5WriterApplication(KafkaTracabProducer kafkaTracabProducer) {
 		this.kafkaTracabProducer = kafkaTracabProducer;
@@ -161,7 +179,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			}
 		}
 
-		kafkaTracabProducer.produce(String.valueOf(metadata.getGameID()), TracabGen5TF01
+		kafkaTracabProducer.produce(tracabGen5RawTopic, String.valueOf(metadata.getGameID()), TracabGen5TF01
 				.newBuilder()
 				.setUtc(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMs).atZone(ZoneOffset.UTC).toString())
 				.setBallPossession(ballOwningTeam)
