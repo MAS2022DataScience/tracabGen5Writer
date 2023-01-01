@@ -3,9 +3,15 @@ package com.mas2022datascience.tracabgen5writer;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.mas2022datascience.avro.v1.GeneralMatch;
+import com.mas2022datascience.avro.v1.GeneralMatchPhase;
+import com.mas2022datascience.avro.v1.GeneralMatchPlayer;
+import com.mas2022datascience.avro.v1.GeneralMatchTeam;
 import com.mas2022datascience.avro.v1.Object;
+import com.mas2022datascience.avro.v1.Phase;
 import com.mas2022datascience.avro.v1.TracabGen5TF01;
 import com.mas2022datascience.avro.v1.TracabGen5TF01Metadata;
+import com.mas2022datascience.avro.v1.TracabGen5TF01Player;
 import com.mas2022datascience.tracabgen5writer.producer.KafkaTracabProducer;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -13,6 +19,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +27,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-
 
 @SpringBootApplication
 public class TracabGen5WriterApplication implements CommandLineRunner {
@@ -78,6 +84,20 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		LOG.info("Running producer");
 		TracabGen5TF01Metadata metadata = null;
 
+		long initialFrameNumber = 0;
+
+		// Read initial offset number
+		try {
+			// Open the file
+			BufferedReader br = new BufferedReader(new FileReader(rawFilePath));
+
+			// Read the file line by line
+			initialFrameNumber = Long.parseLong(br.readLine().split(":")[0]);
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		// Read metadata
 		try {
 			// Create a Gson instance
@@ -85,9 +105,94 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 			// Read the JSON file
 			metadata = gson.fromJson(new FileReader(metadataFilePath), TracabGen5TF01Metadata.class);
-//			kafkaTracabProducer.produce(matchId, Frame.newBuilder()
-//							.build());
-			// Use the object
+
+			// GeneralMatch information
+			kafkaTracabProducer.produceTracabGen5Match(tracabGeneralMatchTopic, Integer.toString(metadata.getGameID()),
+					GeneralMatch
+							.newBuilder()
+							.setPitchShortSide(metadata.getPitchShortSide())
+							.setPitchLongSide(metadata.getPitchLongSide())
+							.build()
+			);
+
+			// GeneralMatchPhase information
+			List<Phase> phases = new ArrayList<>();
+			// Phase1
+			long timeOffsetInMsStart = (metadata.getPhase1StartFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
+			long timeOffsetInMsEnd = (metadata.getPhase1EndFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
+			phases.add(Phase.newBuilder()
+					.setStart(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsStart).atZone(ZoneOffset.UTC).toString())
+					.setEnd(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsEnd).atZone(ZoneOffset.UTC).toString())
+					.build()
+			);
+			// Phase2
+			timeOffsetInMsStart = (metadata.getPhase2StartFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
+			timeOffsetInMsEnd = (metadata.getPhase2EndFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
+			phases.add(Phase.newBuilder()
+					.setStart(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsStart).atZone(ZoneOffset.UTC).toString())
+					.setEnd(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsEnd).atZone(ZoneOffset.UTC).toString())
+					.build()
+			);
+
+			kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+					Integer.toString(metadata.getGameID()),
+					GeneralMatchPhase.newBuilder()
+							.setPhases(phases)
+							.build()
+			);
+
+			// GeneralMatchTeam information
+			kafkaTracabProducer.produceTracabGen5MatchTeam(tracabGeneralMatchTeamTopic,
+					Integer.toString(metadata.getGameID()),
+					GeneralMatchTeam
+							.newBuilder()
+							.setHomeTeamID(metadata.getHomeTeam().getTeamID())
+							.setHomeShortName(metadata.getHomeTeam().getShortName())
+							.setHomeLongName(metadata.getHomeTeam().getLongName())
+							.setAwayTeamID(metadata.getAwayTeam().getTeamID())
+							.setAwayShortName(metadata.getAwayTeam().getShortName())
+							.setAwayLongName(metadata.getAwayTeam().getLongName())
+							.build()
+			);
+
+			// GeneralMatchPlayer information
+			// Home team
+			List<TracabGen5TF01Player> players = new ArrayList<>();
+			for (TracabGen5TF01Player player : metadata.getHomeTeam().getPlayers()) {
+				players.add(TracabGen5TF01Player
+						.newBuilder()
+						.setTeamID(metadata.getHomeTeam().getTeamID())
+						.setPlayerID(player.getPlayerID())
+						.setFirstName(player.getFirstName())
+						.setLastName(player.getLastName())
+						.setJerseyNo(player.getJerseyNo())
+						.setStartFrameCount(player.getStartFrameCount())
+						.setEndFrameCount(player.getEndFrameCount())
+						.build()
+				);
+			}
+			// Away team
+			for (TracabGen5TF01Player player : metadata.getAwayTeam().getPlayers()) {
+				players.add(TracabGen5TF01Player
+						.newBuilder()
+						.setTeamID(metadata.getAwayTeam().getTeamID())
+						.setPlayerID(player.getPlayerID())
+						.setFirstName(player.getFirstName())
+						.setLastName(player.getLastName())
+						.setJerseyNo(player.getJerseyNo())
+						.setStartFrameCount(player.getStartFrameCount())
+						.setEndFrameCount(player.getEndFrameCount())
+						.build()
+				);
+			}
+			kafkaTracabProducer.produceTracabGen5MatchPlayer(tracabGeneralMatchPlayerTopic,
+					Integer.toString(metadata.getGameID()),
+					GeneralMatchPlayer
+							.newBuilder()
+							.setPlayers(players)
+							.build()
+			);
+
 		} catch (JsonIOException | JsonSyntaxException | IOException e) {
 			e.printStackTrace();
 		}
@@ -100,7 +205,6 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			// Read the file line by line
 			String line;
 			line = br.readLine();
-			final long initialFrameNumber = Long.parseLong(line.split(":")[0]);
 			processData(line, metadata, initialFrameNumber);
 
 			while ((line = br.readLine()) != null) {
@@ -179,14 +283,16 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			}
 		}
 
-		kafkaTracabProducer.produce(tracabGen5RawTopic, String.valueOf(metadata.getGameID()), TracabGen5TF01
-				.newBuilder()
-				.setUtc(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMs).atZone(ZoneOffset.UTC).toString())
-				.setBallPossession(ballOwningTeam)
-				.setIsBallInPlay(isBallInPlay)
-				.setContactDevInfo(ballContactDevice1)
-				.setObjects(objects)
-				.build());
+		kafkaTracabProducer.produceTracabGen5(tracabGen5RawTopic, String.valueOf(metadata.getGameID()),
+				TracabGen5TF01
+					.newBuilder()
+					.setUtc(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() +
+											timeOffsetInMs).atZone(ZoneOffset.UTC).toString())
+					.setBallPossession(ballOwningTeam)
+					.setIsBallInPlay(isBallInPlay)
+					.setContactDevInfo(ballContactDevice1)
+					.setObjects(objects)
+					.build());
 
 	}
 
