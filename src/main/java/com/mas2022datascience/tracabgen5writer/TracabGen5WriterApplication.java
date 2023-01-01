@@ -107,7 +107,8 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			metadata = gson.fromJson(new FileReader(metadataFilePath), TracabGen5TF01Metadata.class);
 
 			// GeneralMatch information
-			kafkaTracabProducer.produceTracabGen5Match(tracabGeneralMatchTopic, Integer.toString(metadata.getGameID()),
+			kafkaTracabProducer.produceTracabGen5Match(tracabGeneralMatchTopic,
+					Integer.toString(metadata.getGameID()),
 					GeneralMatch
 							.newBuilder()
 							.setPitchShortSide(metadata.getPitchShortSide())
@@ -118,19 +119,23 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			// GeneralMatchPhase information
 			List<Phase> phases = new ArrayList<>();
 			// Phase1
-			long timeOffsetInMsStart = (metadata.getPhase1StartFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
-			long timeOffsetInMsEnd = (metadata.getPhase1EndFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
 			phases.add(Phase.newBuilder()
-					.setStart(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsStart).atZone(ZoneOffset.UTC).toString())
-					.setEnd(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsEnd).atZone(ZoneOffset.UTC).toString())
+					.setStart(
+							getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									initialFrameNumber, initialTime))
+					.setEnd(
+							getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									initialFrameNumber, initialTime))
 					.build()
 			);
 			// Phase2
-			timeOffsetInMsStart = (metadata.getPhase2StartFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
-			timeOffsetInMsEnd = (metadata.getPhase2EndFrame()-initialFrameNumber) * (1000 / metadata.getFrameRate());
 			phases.add(Phase.newBuilder()
-					.setStart(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsStart).atZone(ZoneOffset.UTC).toString())
-					.setEnd(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() + timeOffsetInMsEnd).atZone(ZoneOffset.UTC).toString())
+					.setStart(
+							getUTCStringFromOffsetValue(metadata.getPhase2StartFrame(), metadata.getFrameRate(),
+									initialFrameNumber, initialTime))
+					.setEnd(
+							getUTCStringFromOffsetValue(metadata.getPhase2EndFrame(), metadata.getFrameRate(),
+									initialFrameNumber, initialTime))
 					.build()
 			);
 
@@ -167,7 +172,13 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 						.setLastName(player.getLastName())
 						.setJerseyNo(player.getJerseyNo())
 						.setStartFrameCount(player.getStartFrameCount())
+						.setStartTime(
+								getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
 						.setEndFrameCount(player.getEndFrameCount())
+						.setEndTime(
+								getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
 						.build()
 				);
 			}
@@ -181,7 +192,13 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 						.setLastName(player.getLastName())
 						.setJerseyNo(player.getJerseyNo())
 						.setStartFrameCount(player.getStartFrameCount())
+						.setStartTime(
+								getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
 						.setEndFrameCount(player.getEndFrameCount())
+						.setEndTime(
+								getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
 						.build()
 				);
 			}
@@ -218,10 +235,28 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		}
 	}
 
+	/**
+	 * Callculates the UTC String out of the offset value and the initial time
+	 * @param offset
+	 * @param frameRate
+	 * @param initialFrameNumber
+	 * @param initialTime
+	 * @return UTC String
+	 */
+	private String getUTCStringFromOffsetValue(long offset , long frameRate, long initialFrameNumber,
+			String initialTime) {
+		if (offset == 0) {
+			return null;
+		} else {
+			return Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() +
+					(offset - initialFrameNumber) *
+							(1000 / frameRate)).atZone(ZoneOffset.UTC).toString();
+		}
+	}
+
 	private void processData(String line, TracabGen5TF01Metadata metadata, long initialFrameNumber) {
 		String[] lineSplit = line.split(":");
 		// chunk 1 is the offset counter
-		long timeOffsetInMs = (Long.parseLong(lineSplit[0])-initialFrameNumber) * (1000 / metadata.getFrameRate());
 
 		// chunk 2 contains the player and referee data
 		// Data type: String represented array of up to 29 objects
@@ -286,8 +321,9 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		kafkaTracabProducer.produceTracabGen5(tracabGen5RawTopic, String.valueOf(metadata.getGameID()),
 				TracabGen5TF01
 					.newBuilder()
-					.setUtc(Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() +
-											timeOffsetInMs).atZone(ZoneOffset.UTC).toString())
+					.setUtc(
+							getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
+									initialFrameNumber, initialTime))
 					.setBallPossession(ballOwningTeam)
 					.setIsBallInPlay(isBallInPlay)
 					.setContactDevInfo(ballContactDevice1)
