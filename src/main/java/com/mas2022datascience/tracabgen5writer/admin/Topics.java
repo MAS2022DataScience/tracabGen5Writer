@@ -41,6 +41,7 @@ public class Topics {
         .partitions(generalMatchPartitions)
         .replicas(generalMatchReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
+        .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
         .build();
   }
 
@@ -58,6 +59,7 @@ public class Topics {
         .partitions(generalMatchPhasePartitions)
         .replicas(generalMatchPhaseReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
+        .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
         .build();
   }
   @Value(value = "${topic.general-match-team.name}")
@@ -74,6 +76,7 @@ public class Topics {
         .partitions(generalMatchTeamPartitions)
         .replicas(generalMatchTeamReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
+        .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
         .build();
   }
   @Value(value = "${topic.general-match-player.name}")
@@ -90,6 +93,7 @@ public class Topics {
         .partitions(generalMatchPlayerPartitions)
         .replicas(generalMatchPlayerReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
+        .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
         .build();
   }
 }
