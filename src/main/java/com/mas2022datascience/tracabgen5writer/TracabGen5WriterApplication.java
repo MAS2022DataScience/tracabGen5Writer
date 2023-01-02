@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -248,9 +249,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		if (offset == 0) {
 			return null;
 		} else {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
 			return Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() +
 					(offset - initialFrameNumber) *
-							(1000 / frameRate)).atZone(ZoneOffset.UTC).toString();
+							(1000 / frameRate)).atZone(ZoneOffset.UTC).format(formatter).toString();
 		}
 	}
 
