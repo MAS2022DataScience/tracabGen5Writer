@@ -237,7 +237,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 	}
 
 	/**
-	 * Callculates the UTC String out of the offset value and the initial time
+	 * Calculates the UTC String out of the offset value and the initial time
 	 * @param offset
 	 * @param frameRate
 	 * @param initialFrameNumber
