@@ -94,6 +94,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 			// Read the file line by line
 			initialFrameNumber = Long.parseLong(br.readLine().split(":")[0]);
+
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -114,36 +115,6 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 							.newBuilder()
 							.setPitchShortSide(metadata.getPitchShortSide())
 							.setPitchLongSide(metadata.getPitchLongSide())
-							.build()
-			);
-
-			// GeneralMatchPhase information
-			List<Phase> phases = new ArrayList<>();
-			// Phase1
-			phases.add(Phase.newBuilder()
-					.setStart(
-							getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
-									initialFrameNumber, initialTime))
-					.setEnd(
-							getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
-									initialFrameNumber, initialTime))
-					.build()
-			);
-			// Phase2
-			phases.add(Phase.newBuilder()
-					.setStart(
-							getUTCStringFromOffsetValue(metadata.getPhase2StartFrame(), metadata.getFrameRate(),
-									initialFrameNumber, initialTime))
-					.setEnd(
-							getUTCStringFromOffsetValue(metadata.getPhase2EndFrame(), metadata.getFrameRate(),
-									initialFrameNumber, initialTime))
-					.build()
-			);
-
-			kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
-					Integer.toString(metadata.getGameID()),
-					GeneralMatchPhase.newBuilder()
-							.setPhases(phases)
 							.build()
 			);
 
@@ -215,6 +186,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			e.printStackTrace();
 		}
 
+		List<Phase> phases = new ArrayList<>();
 		// Read RAW data
 		try {
 			// Open the file
@@ -223,14 +195,15 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			// Read the file line by line
 			String line;
 			line = br.readLine();
-			processData(line, metadata, initialFrameNumber);
+			processData(line, metadata, initialFrameNumber, phases);
 
 			while ((line = br.readLine()) != null) {
-				processData(line, metadata, initialFrameNumber);
+				processData(line, metadata, initialFrameNumber, phases);
 			}
 
 			// Close the file
 			br.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -257,7 +230,8 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		}
 	}
 
-	private void processData(String line, TracabGen5TF01Metadata metadata, long initialFrameNumber) {
+	private void processData(String line, TracabGen5TF01Metadata metadata, long initialFrameNumber,
+			List<Phase> phases) {
 		String[] lineSplit = line.split(":");
 		// chunk 1 is the offset counter
 
@@ -291,6 +265,121 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		// (6) (not always set) ball contact device info 1 ***** -> ignored
 		// (7) (not always set) ball contact device info 2 ***** -> ignored
 		String[] chunk3 = lineSplit[2].replace(";","").split(",");
+
+		// phases
+		switch (phases.size()) {
+			case 0 -> {
+				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase1StartFrame()
+						&& chunk3[5].equals("Alive") && metadata.getPhase1StartFrame() != 0) {
+					phases.add(Phase.newBuilder()
+						.setStart(
+								getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
+						.setEnd(
+								getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
+							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+						.build()
+					);
+					// Produce the metadata phases
+					kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+							Integer.toString(metadata.getGameID()),
+							GeneralMatchPhase.newBuilder()
+									.setPhases(phases)
+									.build()
+					);
+				}
+			}
+			case 1 -> {
+				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase2StartFrame()
+						&& chunk3[5].equals("Alive") && metadata.getPhase2StartFrame() != 0) {
+					phases.add(Phase.newBuilder()
+							.setStart(
+									getUTCStringFromOffsetValue(metadata.getPhase2StartFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setEnd(
+									getUTCStringFromOffsetValue(metadata.getPhase2EndFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.build()
+					);
+					// Produce the metadata phases
+					kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+							Integer.toString(metadata.getGameID()),
+							GeneralMatchPhase.newBuilder()
+									.setPhases(phases)
+									.build()
+					);
+				}
+			}
+			case 2 -> {
+				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase3StartFrame()
+						&& chunk3[5].equals("Alive") && metadata.getPhase3StartFrame() != 0) {
+					phases.add(Phase.newBuilder()
+							.setStart(
+									getUTCStringFromOffsetValue(metadata.getPhase3StartFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setEnd(
+									getUTCStringFromOffsetValue(metadata.getPhase3EndFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.build()
+					);
+					// Produce the metadata phases
+					kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+							Integer.toString(metadata.getGameID()),
+							GeneralMatchPhase.newBuilder()
+									.setPhases(phases)
+									.build()
+					);
+				}
+			}
+			case 3 -> {
+				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase4StartFrame()
+						&& chunk3[5].equals("Alive") && metadata.getPhase4StartFrame() != 0) {
+					phases.add(Phase.newBuilder()
+							.setStart(
+									getUTCStringFromOffsetValue(metadata.getPhase4StartFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setEnd(
+									getUTCStringFromOffsetValue(metadata.getPhase4EndFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.build()
+					);
+					// Produce the metadata phases
+					kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+							Integer.toString(metadata.getGameID()),
+							GeneralMatchPhase.newBuilder()
+									.setPhases(phases)
+									.build()
+					);
+				}
+			}
+			case 4 -> {
+				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase5StartFrame()
+						&& chunk3[5].equals("Alive") && metadata.getPhase5StartFrame() != 0) {
+					phases.add(Phase.newBuilder()
+							.setStart(
+									getUTCStringFromOffsetValue(metadata.getPhase5StartFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setEnd(
+									getUTCStringFromOffsetValue(metadata.getPhase5EndFrame(), metadata.getFrameRate(),
+											initialFrameNumber, initialTime))
+							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.build()
+					);
+					// Produce the metadata phases
+					kafkaTracabProducer.produceTracabGen5MatchPhase(tracabGeneralMatchPhaseTopic,
+							Integer.toString(metadata.getGameID()),
+							GeneralMatchPhase.newBuilder()
+									.setPhases(phases)
+									.build()
+					);
+				}
+			}
+			default -> {}
+		}
 
 		objects.add(Object.newBuilder()
 				.setType(7)
@@ -335,4 +424,50 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 	}
 
+	/**
+	 * checks which team (majority of the players) is on the left pitch side
+	 * @param playerList of chunk 2 of type String[]
+	 * @return TeamID of the left team of type Integer
+	 */
+	private Integer getLeftTeamID(String[] playerList, TracabGen5TF01Metadata metadata) {
+
+		int homeTeamCount = 0;
+		for (String player : playerList) {
+			String[] playerSplit = player.split(",");
+			// Valid values: 1=Hometeam, 0=Awayteam, 3=Referee. Other values are used for internal purposes.
+			if (playerSplit[0].equals("1") &&
+				isPlayerOnLeftPitchSide(Integer.parseInt(playerSplit[3]),
+						Integer.parseInt(playerSplit[4]), metadata)) {
+				homeTeamCount++;
+			}
+		}
+
+		// if home team has more than 8 players on the left pitch side, then home team is the left team
+		if (homeTeamCount > 8) {
+			return metadata.getHomeTeam().getTeamID();
+		} else {
+			return metadata.getAwayTeam().getTeamID();
+		}
+	}
+
+	/**
+	 * checks if the player x, y coordinates are on the left pitch side
+	 * @param x coordinate of the player of type Integer
+	 * @param y coordinate of the player of type Integer
+	 * @param metadata of the match of type TracabGen5TF01Metadata
+	 * @return true if the player is on the left pitch side, false otherwise
+	 */
+	private boolean isPlayerOnLeftPitchSide (int x, int y, TracabGen5TF01Metadata metadata) {
+		int pitchMaxYSize = metadata.getPitchShortSide() / 2;
+		int pitchMaxXSize = metadata.getPitchLongSide() / 2;
+
+		if (x <= 0 && x >= -pitchMaxXSize && y <= pitchMaxYSize && y >= -pitchMaxYSize) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }
+
+
