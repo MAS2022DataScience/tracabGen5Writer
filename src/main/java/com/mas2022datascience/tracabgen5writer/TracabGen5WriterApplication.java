@@ -413,14 +413,15 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		kafkaTracabProducer.produceTracabGen5(tracabGen5RawTopic, String.valueOf(metadata.getGameID()),
 				TracabGen5TF01
 					.newBuilder()
-					.setUtc(
-							getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
-									initialFrameNumber, initialTime))
-					.setBallPossession(ballOwningTeam)
-					.setIsBallInPlay(isBallInPlay)
-					.setContactDevInfo(ballContactDevice1)
-					.setObjects(objects)
-					.build());
+						.setUtc(
+								getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
+										initialFrameNumber, initialTime))
+						.setMatchId(String.valueOf(metadata.getGameID()))
+						.setBallPossession(ballOwningTeam)
+						.setIsBallInPlay(isBallInPlay)
+						.setContactDevInfo(ballContactDevice1)
+						.setObjects(objects)
+						.build());
 
 	}
 
