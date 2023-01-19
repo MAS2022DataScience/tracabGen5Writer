@@ -1,5 +1,7 @@
 package com.mas2022datascience.tracabgen5writer;
 
+import static com.mas2022datascience.util.Time.utcString2epocMs;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -418,6 +420,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		kafkaTracabProducer.produceTracabGen5(tracabGen5RawTopic, String.valueOf(metadata.getGameID()),
 				TracabGen5TF01
 					.newBuilder()
+						.setTs(
+								Instant.ofEpochMilli(utcString2epocMs(
+										getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]),
+												metadata.getFrameRate(),
+												initialFrameNumber, initialTime))))
 						.setUtc(
 								getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
