@@ -272,10 +272,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase1StartFrame()
 						&& chunk3[5].equals("Alive") && metadata.getPhase1StartFrame() != 0) {
 					phases.add(Phase.newBuilder()
-						.setStart(
+							.setPhaseNumber(1)
+							.setStart(
 								getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
-						.setEnd(
+							.setEnd(
 								getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
@@ -294,11 +295,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase2StartFrame()
 						&& chunk3[5].equals("Alive") && metadata.getPhase2StartFrame() != 0) {
 					phases.add(Phase.newBuilder()
+							.setPhaseNumber(2)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase2StartFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase2EndFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
 							.build()
@@ -316,11 +318,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase3StartFrame()
 						&& chunk3[5].equals("Alive") && metadata.getPhase3StartFrame() != 0) {
 					phases.add(Phase.newBuilder()
+							.setPhaseNumber(3)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase3StartFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase3EndFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
 							.build()
@@ -338,11 +341,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase4StartFrame()
 						&& chunk3[5].equals("Alive") && metadata.getPhase4StartFrame() != 0) {
 					phases.add(Phase.newBuilder()
+							.setPhaseNumber(4)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase4StartFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase4EndFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
 							.build()
@@ -360,11 +364,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				if (Integer.parseInt(lineSplit[0])>=metadata.getPhase5StartFrame()
 						&& chunk3[5].equals("Alive") && metadata.getPhase5StartFrame() != 0) {
 					phases.add(Phase.newBuilder()
+							.setPhaseNumber(5)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase5StartFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase5EndFrame(), metadata.getFrameRate(),
+									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
 							.build()
