@@ -15,6 +15,8 @@ import com.mas2022datascience.avro.v1.TracabGen5TF01;
 import com.mas2022datascience.avro.v1.TracabGen5TF01Metadata;
 import com.mas2022datascience.avro.v1.TracabGen5TF01Player;
 import com.mas2022datascience.tracabgen5writer.producer.KafkaTracabProducer;
+import com.mas2022datascience.util.Player;
+import com.mas2022datascience.util.Team;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -234,6 +236,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 	private void processData(String line, TracabGen5TF01Metadata metadata, long initialFrameNumber,
 			List<Phase> phases) {
+
 		String[] lineSplit = line.split(":");
 		// chunk 1 is the offset counter
 
@@ -250,6 +253,8 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 				objects.add(Object.newBuilder()
 						.setType(Integer.parseInt(objectData[0]))
 						.setId(objectData[2])
+						.setPlayerId(Player.getPlayerIdJerseyNumber(objectData[2], objectData[0], metadata))
+						.setTeamId(Team.getTeamIdFromHomeOrAwayId(Integer.parseInt(objectData[0]), metadata))
 						.setX(Integer.parseInt(objectData[3]))
 						.setY(Integer.parseInt(objectData[4]))
 						.setZ(0)
