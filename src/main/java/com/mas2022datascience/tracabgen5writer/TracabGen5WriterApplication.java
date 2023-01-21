@@ -17,12 +17,11 @@ import com.mas2022datascience.avro.v1.TracabGen5TF01Player;
 import com.mas2022datascience.tracabgen5writer.producer.KafkaTracabProducer;
 import com.mas2022datascience.util.Player;
 import com.mas2022datascience.util.Team;
+import com.mas2022datascience.util.Time;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -149,11 +148,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 						.setJerseyNo(player.getJerseyNo())
 						.setStartFrameCount(player.getStartFrameCount())
 						.setStartTime(
-								getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
+								Time.getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 						.setEndFrameCount(player.getEndFrameCount())
 						.setEndTime(
-								getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
+								Time.getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 						.build()
 				);
@@ -169,11 +168,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 						.setJerseyNo(player.getJerseyNo())
 						.setStartFrameCount(player.getStartFrameCount())
 						.setStartTime(
-								getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
+								Time.getUTCStringFromOffsetValue(player.getStartFrameCount(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 						.setEndFrameCount(player.getEndFrameCount())
 						.setEndTime(
-								getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
+								Time.getUTCStringFromOffsetValue(player.getEndFrameCount(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 						.build()
 				);
@@ -210,27 +209,6 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Calculates the UTC String out of the offset value and the initial time
-	 * @param offset
-	 * @param frameRate
-	 * @param initialFrameNumber
-	 * @param initialTime
-	 * @return UTC String
-	 */
-	private String getUTCStringFromOffsetValue(long offset , long frameRate, long initialFrameNumber,
-			String initialTime) {
-		if (offset == 0) {
-			return null;
-		} else {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-			return Instant.ofEpochMilli(Instant.parse(initialTime).toEpochMilli() +
-					(offset - initialFrameNumber) *
-							(1000 / frameRate)).atZone(ZoneOffset.UTC).format(formatter).toString();
 		}
 	}
 
@@ -281,12 +259,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(1)
 							.setStart(
-								getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 							.setEnd(
-								getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
-							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 						.build()
 					);
 					// Produce the metadata phases
@@ -304,12 +282,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(2)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
-							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
 					);
 					// Produce the metadata phases
@@ -327,12 +305,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(3)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
-							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
 					);
 					// Produce the metadata phases
@@ -350,12 +328,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(4)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
-							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
 					);
 					// Produce the metadata phases
@@ -373,12 +351,12 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(5)
 							.setStart(
-									getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
-							.setLeftTeamID(getLeftTeamID(chunk2, metadata))
+							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
 					);
 					// Produce the metadata phases
@@ -428,11 +406,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					.newBuilder()
 						.setTs(
 								Instant.ofEpochMilli(utcString2epocMs(
-										getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]),
+										Time.getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]),
 												metadata.getFrameRate(),
 												initialFrameNumber, initialTime))))
 						.setUtc(
-								getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
+								Time.getUTCStringFromOffsetValue(Long.parseLong(lineSplit[0]), metadata.getFrameRate(),
 										initialFrameNumber, initialTime))
 						.setMatchId(String.valueOf(metadata.getGameID()))
 						.setBallPossession(ballOwningTeam)
@@ -441,50 +419,6 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 						.setObjects(objects)
 						.build());
 
-	}
-
-	/**
-	 * checks which team (majority of the players) is on the left pitch side
-	 * @param playerList of chunk 2 of type String[]
-	 * @return TeamID of the left team of type Integer
-	 */
-	private Integer getLeftTeamID(String[] playerList, TracabGen5TF01Metadata metadata) {
-
-		int homeTeamCount = 0;
-		for (String player : playerList) {
-			String[] playerSplit = player.split(",");
-			// Valid values: 1=Hometeam, 0=Awayteam, 3=Referee. Other values are used for internal purposes.
-			if (playerSplit[0].equals("1") &&
-				isPlayerOnLeftPitchSide(Integer.parseInt(playerSplit[3]),
-						Integer.parseInt(playerSplit[4]), metadata)) {
-				homeTeamCount++;
-			}
-		}
-
-		// if home team has more than 8 players on the left pitch side, then home team is the left team
-		if (homeTeamCount > 8) {
-			return metadata.getHomeTeam().getTeamID();
-		} else {
-			return metadata.getAwayTeam().getTeamID();
-		}
-	}
-
-	/**
-	 * checks if the player x, y coordinates are on the left pitch side
-	 * @param x coordinate of the player of type Integer
-	 * @param y coordinate of the player of type Integer
-	 * @param metadata of the match of type TracabGen5TF01Metadata
-	 * @return true if the player is on the left pitch side, false otherwise
-	 */
-	private boolean isPlayerOnLeftPitchSide (int x, int y, TracabGen5TF01Metadata metadata) {
-		int pitchMaxYSize = metadata.getPitchShortSide() / 2;
-		int pitchMaxXSize = metadata.getPitchLongSide() / 2;
-
-		if (x <= 0 && x >= -pitchMaxXSize && y <= pitchMaxYSize && y >= -pitchMaxYSize) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 }
