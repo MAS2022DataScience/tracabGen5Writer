@@ -393,6 +393,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			default -> {}
 		}
 
+		// ball
 		objects.add(Object.newBuilder()
 				.setType(7)
 				.setId("0")
