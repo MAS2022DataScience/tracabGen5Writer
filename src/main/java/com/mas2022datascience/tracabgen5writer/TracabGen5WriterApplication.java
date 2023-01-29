@@ -282,10 +282,10 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(2)
 							.setStart(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase2StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase2EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
@@ -305,10 +305,10 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(3)
 							.setStart(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase3StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase3EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
@@ -328,10 +328,10 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(4)
 							.setStart(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase4StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase4EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
@@ -351,10 +351,10 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 					phases.add(Phase.newBuilder()
 							.setPhaseNumber(5)
 							.setStart(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1StartFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase5StartFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setEnd(
-									Time.getUTCStringFromOffsetValue(metadata.getPhase1EndFrame(), metadata.getFrameRate(),
+									Time.getUTCStringFromOffsetValue(metadata.getPhase5EndFrame(), metadata.getFrameRate(),
 											initialFrameNumber, initialTime))
 							.setLeftTeamID(Team.getLeftTeamID(chunk2, metadata))
 							.build()
