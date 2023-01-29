@@ -42,6 +42,10 @@ public class Topics {
         .replicas(generalMatchReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
         .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
+        .config(TopicConfig.DELETE_RETENTION_MS_CONFIG, "10")
+        .config(TopicConfig.SEGMENT_MS_CONFIG, "100")
+        .config(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.01")
+        .config(TopicConfig.MIN_COMPACTION_LAG_MS_CONFIG, "0")
         .build();
   }
 
@@ -60,6 +64,10 @@ public class Topics {
         .replicas(generalMatchPhaseReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
         .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
+        .config(TopicConfig.DELETE_RETENTION_MS_CONFIG, "10")
+        .config(TopicConfig.SEGMENT_MS_CONFIG, "100")
+        .config(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.01")
+        .config(TopicConfig.MIN_COMPACTION_LAG_MS_CONFIG, "0")
         .build();
   }
   @Value(value = "${topic.general-match-team.name}")
@@ -77,6 +85,10 @@ public class Topics {
         .replicas(generalMatchTeamReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
         .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
+        .config(TopicConfig.DELETE_RETENTION_MS_CONFIG, "10")
+        .config(TopicConfig.SEGMENT_MS_CONFIG, "100")
+        .config(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.01")
+        .config(TopicConfig.MIN_COMPACTION_LAG_MS_CONFIG, "0")
         .build();
   }
   @Value(value = "${topic.general-match-player.name}")
@@ -94,6 +106,10 @@ public class Topics {
         .replicas(generalMatchPlayerReplicationFactor)
         .config(TopicConfig.RETENTION_MS_CONFIG, "-1")
         .config(TopicConfig.CLEANUP_POLICY_CONFIG, "compact")
+        .config(TopicConfig.DELETE_RETENTION_MS_CONFIG, "10")
+        .config(TopicConfig.SEGMENT_MS_CONFIG, "100")
+        .config(TopicConfig.MIN_CLEANABLE_DIRTY_RATIO_CONFIG, "0.01")
+        .config(TopicConfig.MIN_COMPACTION_LAG_MS_CONFIG, "0")
         .build();
   }
 }
