@@ -225,8 +225,8 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		// (3) pitch position x***, (4) pitch position y***, (5) target speed****
 		ArrayList<Object> objects = new ArrayList<>();
 		String[] chunk2 = lineSplit[1].split(";");
-		for (int i = 0; i < chunk2.length-1; i++) {
-			String[] objectData = chunk2[i].split(",");
+		for (String s : chunk2) {
+			String[] objectData = s.split(",");
 			if (!objectData[0].equals("-1")) {
 				objects.add(Object.newBuilder()
 						.setType(Integer.parseInt(objectData[0]))
