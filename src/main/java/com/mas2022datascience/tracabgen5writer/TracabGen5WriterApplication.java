@@ -199,9 +199,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			String line;
 			line = br.readLine();
 			processData(line, metadata, initialFrameNumber, phases);
+			Thread.sleep(40);
 
 			while ((line = br.readLine()) != null) {
 				processData(line, metadata, initialFrameNumber, phases);
+				Thread.sleep(40);
 			}
 
 			// Close the file
@@ -209,6 +211,8 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
