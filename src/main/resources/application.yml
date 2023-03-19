@@ -3,6 +3,38 @@ topic:
     name: tracabgen5_01_raw
     replication-factor: 2
     partitions: 3
+  tracab-02:
+    name: tracabgen5_02_filter
+    replication-factor: 2
+    partitions: 3
+  tracab-03:
+    name: tracabgen5_03_enriched
+    replication-factor: 2
+    partitions: 3
+  general-01:
+    name: general_01_player_ball
+    replication-factor: 2
+    partitions: 3
+  general-02:
+    name: general_02_team
+    replication-factor: 2
+    partitions: 3
+  general-03:
+    name: general_01_player_ball_compact
+    replication-factor: 2
+    partitions: 3
+  general-acceleration:
+    name: general_03_acceleration
+    replication-factor: 2
+    partitions: 3
+  general-ball-zone-change:
+    name: general_05_ball_zone_change
+    replication-factor: 2
+    partitions: 3
+  general-ball-possession-change:
+    name: general_04_ball_possession_change
+    replication-factor: 2
+    partitions: 3
   general-match:
     name: general_match
     replication-factor: 2
