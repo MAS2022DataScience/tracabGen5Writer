@@ -54,14 +54,14 @@ topic:
 
 file:
   raw:
-    filepath: "./tracabGen5/133039.dat"
+    filepath: "./tracabGen5/20221206200000PORSUI/128075.dat"
   metadata:
-    filepath: "./tracabGen5/133039_metadata.json"
+    filepath: "./tracabGen5/20221206200000PORSUI/128075_metadata.json"
 
 writer:
   tracab:
     gen5:
-      time-start: 2022-12-02T20:00:00.000Z
+      time-start: 2022-12-06T20:00:00.000Z
 
 spring:
   kafka:
