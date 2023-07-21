@@ -66,6 +66,10 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 	@Value(value = "${topic.general-match-player.name}")
 	private String tracabGeneralMatchPlayerTopic;
 
+	// Sleep time between records
+	@Value(value = "${writer.sleep-between-records}")
+	private int sleepBetweenRecords;
+
 	public TracabGen5WriterApplication(KafkaTracabProducer kafkaTracabProducer) {
 		this.kafkaTracabProducer = kafkaTracabProducer;
 	}
@@ -199,11 +203,11 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 			String line;
 			line = br.readLine();
 			processData(line, metadata, initialFrameNumber, phases);
-			Thread.sleep(40);
+			Thread.sleep(sleepBetweenRecords);
 
 			while ((line = br.readLine()) != null) {
 				processData(line, metadata, initialFrameNumber, phases);
-				Thread.sleep(40);
+				Thread.sleep(sleepBetweenRecords);
 			}
 
 			// Close the file
