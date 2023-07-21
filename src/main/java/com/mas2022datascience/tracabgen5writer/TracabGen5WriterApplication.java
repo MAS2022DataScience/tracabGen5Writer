@@ -379,6 +379,7 @@ public class TracabGen5WriterApplication implements CommandLineRunner {
 		objects.add(Object.newBuilder()
 				.setType(7)
 				.setId("0")
+				.setPlayerId("0") // to have a key in the enrichment microservice
 				.setX(Integer.parseInt(chunk3[0]))
 				.setY(Integer.parseInt(chunk3[1]))
 				.setZ(Integer.parseInt(chunk3[2]))
